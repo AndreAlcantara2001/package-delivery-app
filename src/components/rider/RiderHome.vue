@@ -200,7 +200,7 @@ export default {
       this.sCor[0] = preDeliveryData.pickupLat;
       this.sCor[1] = preDeliveryData.pickupLng;
 
-      this.sCor[0] = preDeliveryData.destinationLat;
+      this.eCor[0] = preDeliveryData.destinationLat;
       this.eCor[1] = preDeliveryData.destinationLng;
 
       this.show = true;
