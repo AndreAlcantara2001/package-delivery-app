@@ -8,9 +8,6 @@ import RiderLogin from '../components/rider/RiderLogin.vue'
 import RiderRegistration from '../components/rider/RiderRegistration.vue'
 import RiderHome from '../components/rider/RiderHome.vue'
 import GetNearRiders from '../components/delivery/GetNearRiders.vue'
-import RiderTest from '../components/rider/RiderTest.vue'
-import LRoutingMachine from '../components/leafletMap/LRoutingMachine.vue'
-import RequestDelivery from '../components/delivery/RequestDelivery.vue'
 import TrackRider from '../components/delivery/TrackRider.vue'
 
 Vue.use(VueRouter)
@@ -22,11 +19,6 @@ const routes = [
     component: HomeView
   },
 
-  {
-    path: '/LRoutingMachine',
-    name: 'LRoutingMachine',
-    component: LRoutingMachine
-  },
 
   {
     path: '/about',
@@ -71,11 +63,6 @@ const routes = [
     component: TrackRider
   },
 
-  {
-    path: '/delivery/request-delivery',
-    name: 'RequestDelivery',
-    component: RequestDelivery
-  },
 
   {
     path: '/rider-home/:id',
@@ -83,11 +70,6 @@ const routes = [
     component: RiderHome
   },
 
-  {
-    path: '/rider-test/:id',
-    name: 'RiderTest',
-    component: RiderTest
-  },
 
 
 ]

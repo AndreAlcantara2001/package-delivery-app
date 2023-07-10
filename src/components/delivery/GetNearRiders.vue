@@ -35,7 +35,7 @@ export default {
         }
     },
     mounted() {
-        connectWebSocket(this.subscribeWebSocketMessage());
+        connectWebSocket(this.subscribeWebSocketMessage);
         this.getNearRiders();
         
     },

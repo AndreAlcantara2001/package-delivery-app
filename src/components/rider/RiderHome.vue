@@ -101,7 +101,10 @@ export default {
 
   created() {
     connectWebSocket(this.subscribeWebSocketMessage);
-    this.trackRiderLocation();
+
+    setInterval(() => {
+      this.trackRiderLocation();
+    }, 3000);
     
   },
 
@@ -136,7 +139,7 @@ export default {
     },
 
     trackRiderLocation() {
-      navigator.geolocation.watchPosition(
+      navigator.geolocation.getCurrentPosition(
         (position) => {
           this.trackRiderData.latitude = position.coords.latitude;
           this.trackRiderData.longitude = position.coords.longitude;

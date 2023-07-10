@@ -18,7 +18,7 @@ export default {
     },
 
     mounted(){
-        connectWebSocket(this.subscribeWebSocketMessage());
+        connectWebSocket(this.subscribeWebSocketMessage);
     },
 
     methods:{
