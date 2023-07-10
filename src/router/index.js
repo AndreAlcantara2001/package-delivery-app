@@ -11,6 +11,7 @@ import GetNearRiders from '../components/delivery/GetNearRiders.vue'
 import RiderTest from '../components/rider/RiderTest.vue'
 import LRoutingMachine from '../components/leafletMap/LRoutingMachine.vue'
 import RequestDelivery from '../components/delivery/RequestDelivery.vue'
+import TrackRider from '../components/delivery/TrackRider.vue'
 
 Vue.use(VueRouter)
 
@@ -62,6 +63,12 @@ const routes = [
     path: '/delivery/get-near-riders/:id',
     name: 'GetNearRiders',
     component: GetNearRiders
+  },
+
+  {
+    path: '/delivery/track-rider/:id',
+    name: 'TrackRider',
+    component: TrackRider
   },
 
   {

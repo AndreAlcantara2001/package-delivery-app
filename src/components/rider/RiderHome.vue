@@ -10,7 +10,7 @@
         <v-card class="mx-auto" max-width="344">
 
           <div v-if="sCor.length > 1">
-            <LRoutingMachine :sCor="sCor" :eCor="eCor"/>
+            <LRoutingMachine :sCor="sCor" :eCor="eCor" />
           </div>
 
           <v-card-title>
@@ -77,7 +77,14 @@ export default {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       showExtend: false,
       show: false,
+
+      confirmDelivery: {
+        preDeliId: '',
+        riderId: this.$route.params.id,
+      },
+
       trackRiderData: {
+        deliveryId: 0,
         preDelivery: null,
         riderId: this.$route.params.id,
         latitude: '',
@@ -95,10 +102,12 @@ export default {
   created() {
     connectWebSocket(this.subscribeWebSocketMessage);
     this.trackRiderLocation();
+    
   },
 
   mounted() {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
+
   },
 
   methods: {
@@ -148,8 +157,20 @@ export default {
     },
 
     handleConfirmDelivery() {
-      this.trackRiderLocation();
-      console.log(this.trackRiderData);
+
+
+      axios.post('http://localhost:7071/delivery/confirm', this.confirmDelivery)
+        .then(response => {
+
+          const respData = response.data;
+
+          this.trackRiderData.deliveryId = respData.deliveryId;
+
+          console.log("Rider track data: ", this.trackRiderData);
+
+        }).catch(error => console.error(error));
+
+
 
     },
 
@@ -160,13 +181,14 @@ export default {
     },
 
     subscribeWebSocketMessage() {
-            subscribeToDestination('/package-delivery/rider/get-pre-delivery/' + this.trackRiderData.riderId, this.handleRequestDelivery);
-        },
+      subscribeToDestination('/package-delivery/rider/get-pre-delivery/' + this.trackRiderData.riderId, this.handleRequestDelivery);
+    },
 
     handleRequestDelivery(message) {
       const preDeliveryData = JSON.parse(message.body);
       this.trackRiderData.preDelivery = preDeliveryData;
-    
+      this.confirmDelivery.preDeliId = preDeliveryData.preDeliId;
+
       console.log(
         'Request pre Delivery Response from server to each rider',
         this.trackRiderData.preDelivery
