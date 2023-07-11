@@ -23,6 +23,8 @@ import LeafletMap from '../leafletMap/LeafletMap.vue';
 import { connectWebSocket, subscribeToDestination } from '@/utils/websocketconfig';
 export default {
 
+  //
+
     components: {
         LeafletMap,
     },
