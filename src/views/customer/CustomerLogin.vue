@@ -85,7 +85,7 @@
 
 <script>
 import axios from 'axios';
-import LoadingComp from '../LoadingComp.vue';
+import LoadingComp from '../../components/LoadingComp.vue'
 export default {
   components:{
     LoadingComp,
@@ -94,7 +94,15 @@ export default {
     return {
       showError: false,
       showLoading: false,
-      customer: {},
+      customer: {
+        customerId: '',
+        name: '',
+        email: '',
+        password: '',
+        address: '',
+        phoneNumber: '',
+        role: "customer",
+      },
       loginData: {
         username: '',
         password: ''
@@ -110,9 +118,10 @@ export default {
           .then(response => {
             // Successful login
             console.log('Login Response:', response.data);
+
             // Perform further actions or navigate to a different page
-            this.$store.commit("setLoginUser", this.customer)
-            this.$router.push({ name: 'PreDelivery', params: { id: response.data.customerId } });
+            this.$store.commit('setUserRole', 'customer');
+            this.$router.push({ name: 'CustomerHome', params: { id: response.data.customerId } });
             this.loginData.username = '';
             this.loginData.password = '';
             this.showLoading = false;

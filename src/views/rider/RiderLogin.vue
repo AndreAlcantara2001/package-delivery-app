@@ -73,6 +73,7 @@ export default {
             // Successful login
             console.log('Login Response:', response.data);
             // Perform further actions or navigate to a different page
+            this.$store.commit('setUserRole', 'rider');
             this.$router.push({ name: 'RiderHome', params: { id: response.data.riderId } });
             this.loginData.username = '';
             this.loginData.password = '';

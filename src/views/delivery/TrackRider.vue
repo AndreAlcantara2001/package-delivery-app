@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="rider">
+    <CustomerNavBar/>
+    <div v-if="rider" style="margin-top: 5rem;">
         {{ rider }}
 
         <div>
@@ -11,18 +12,21 @@
 </template>
 
 <script>
+import CustomerNavBar from '../../components/CustomerNavBar.vue'
 import { connectWebSocket, subscribeToDestination } from '@/utils/websocketconfig';
 import LeafletMap from '../leafletMap/LeafletMap.vue';
 import axios from 'axios';
+
 export default {
 
     components:{
-        LeafletMap
+        LeafletMap,
+        CustomerNavBar,
     },
 
     data(){
         return{
-            rider: null,
+            rider: "Hello",
             deliveryId: this.$route.params.id,
 
             pickupLocation:[],
@@ -54,6 +58,7 @@ export default {
         handleRiderMessage(message){
             const riderData = JSON.parse(message.body);
             this.rider = riderData;
+            console.log("Rider: ", this.rider);
         },
 
 

@@ -1,24 +1,27 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    loginUser:{},
-    isLogin: false,
+    userRole: null,
+    userNotifications: [],
   },
   getters: {
+
   },
   mutations: {
-    setLoginUser(state, user){
-      sessionStorage.setItem("isLogin", true);
-      state.loginUser = user;
-      state.isLogin = true;
-    }
+    setUserRole(state, role) {
+      state.userRole = role;
+    },
+
+  setUserNotifications(state, { role, notifications}){
+    state.userNotifications = [{ role, notifications}];
+  }
+
   },
   actions: {
+
   },
-  modules: {
-  }
-})
+});

@@ -1,7 +1,7 @@
 <template>
   <div>
-
-    <v-row style="margin-top: 15px;">
+    <CustomerNavBar/>
+    <v-row style="margin-top: 5rem;">
 
       <v-col cols="12" lg="6" md="12">
         <v-card class="pa-10 ml-9" style="
@@ -123,6 +123,7 @@
 
 
 <script>
+import CustomerNavBar from '../../components/CustomerNavBar.vue'
 import L from 'leaflet';
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 import axios from 'axios';
@@ -133,7 +134,7 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-
+    CustomerNavBar,
   },
   data() {
     return {

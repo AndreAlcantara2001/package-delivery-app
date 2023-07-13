@@ -104,7 +104,7 @@ export default {
 
     setInterval(() => {
       this.trackRiderLocation();
-    }, 3000);
+    }, 10000);
     
   },
 
