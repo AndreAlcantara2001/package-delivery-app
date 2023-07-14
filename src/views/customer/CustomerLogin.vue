@@ -1,26 +1,4 @@
 <template>
-  <!--   <v-form ref="form" @submit.prevent="loginCustomer">
-    <v-container>
-      <v-row>
-        <v-col cols="12" v-if="showError">
-          <p>Username or password is wrong</p>
-        </v-col>
-        <v-col cols="12">
-          <v-text-field v-model="loginData.username" label="Username" required></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field v-model="loginData.password" label="Password" type="password" required></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-btn color="primary" type="submit">Login</v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-form> -->
 
   <v-container fluid fill-height>
     <div class="background"></div>
@@ -94,15 +72,6 @@ export default {
     return {
       showError: false,
       showLoading: false,
-      customer: {
-        customerId: '',
-        name: '',
-        email: '',
-        password: '',
-        address: '',
-        phoneNumber: '',
-        role: "customer",
-      },
       loginData: {
         username: '',
         password: ''
@@ -138,8 +107,10 @@ export default {
 
               setTimeout(() => {
                 this.showError = false;
-              }, 5000);
+              }, 3000);
 
+            this.loginData.username = '';
+            this.loginData.password = '';
 
             } else {
               // Other error occurred

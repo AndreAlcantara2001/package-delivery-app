@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <CustomerNavBar/>
-    <div v-if="rider" style="margin-top: 5rem;">
-        {{ rider }}
+    <div>
+        <CustomerNavBar />
+        <div v-if="rider" style="margin-top: 5rem;">
+            {{ rider }}
 
-        <div>
-            <LeafletMap />
+            <div>
+                <LeafletMap :currentLocation="pickupLocation" :riderLocation="[rider.latitude, rider.longitude]" />
+            </div>
         </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -19,43 +19,47 @@ import axios from 'axios';
 
 export default {
 
-    components:{
+    components: {
         LeafletMap,
         CustomerNavBar,
     },
 
-    data(){
-        return{
-            rider: "Hello",
+    data() {
+        return {
+            rider: {},
             deliveryId: this.$route.params.id,
 
-            pickupLocation:[],
+            pickupLocation: [],
         }
     },
 
-    mounted(){
+    mounted() {
         this.getDelivery();
         connectWebSocket(this.subscribeWebSocketMessage);
     },
 
-    methods:{
+    methods: {
 
-        getDelivery(){
+        getDelivery() {
             axios.get(`http://localhost:7071/delivery/getById/${this.deliveryId}`)
-            .then(response => {
-                const data = response.data;
-                this.pickupLocation[0] = data.pickupLat;
-                this.pickupLocation[1] = data.pickupLng;
+                .then(response => {
 
-                console.log("Pickup Cors: ", this.pickupLocation);
-            }).catch(error => console.error(error));
+                    if (response) {
+                        const data = response.data;
+                        this.pickupLocation[0] = data.pickupLat;
+                        this.pickupLocation[1] = data.pickupLng;
+
+                        console.log("Pickup Cors: ", this.pickupLocation);
+                    }
+
+                }).catch(error => console.error(error));
         },
 
-        subscribeWebSocketMessage(){
+        subscribeWebSocketMessage() {
             subscribeToDestination(`/package-delivery/rider/track-rider/${this.deliveryId}`, this.handleRiderMessage);
         },
 
-        handleRiderMessage(message){
+        handleRiderMessage(message) {
             const riderData = JSON.parse(message.body);
             this.rider = riderData;
             console.log("Rider: ", this.rider);
@@ -65,12 +69,10 @@ export default {
 
     },
 
-    
+
 
 
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

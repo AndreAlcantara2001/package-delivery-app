@@ -53,8 +53,8 @@
                       outlined></v-text-field>
                   </v-col>
 
-                  <v-col cols="12" lg="6" md="6" class="inputCol">
-                    <v-text-field v-model="preDelivery.cost" label="Cost" required outlined></v-text-field>
+                  <v-col cols="12" lg="6" md="6" class="inputCol" v-if="preDelivery.distance">
+                    <v-text-field :value="calCost()" label="Cost" required outlined readonly></v-text-field>
                   </v-col>
                 </v-row>
 
@@ -192,6 +192,30 @@ export default {
   },
 
   methods: {
+
+    calCost(){
+      let kg = this.preDelivery.itemWeight;
+      let km = this.preDelivery.distance;
+
+      if(kg < 10.00){
+        kg = 1.00;
+      }else{
+        kg = kg/10;
+      }
+
+      if(km < 2.00){
+        km = 1;
+      }else{
+        km = km/2;
+      }
+
+      const cost = (kg * km) * 1000;
+
+      this.preDelivery.cost = cost;
+      return cost.toFixed(2);
+
+    },
+
     async getPickUpAddress(latitude, longitude) {
       try {
         const address = await this.getAddressResult(latitude, longitude);

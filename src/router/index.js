@@ -16,6 +16,11 @@ import RiderRegistration from '../views/rider/RiderRegistration.vue'
 import RiderHome from '../views/rider/RiderHome.vue'
 
 import AdminHome from '../views/admin/AdminHome.vue'
+import AdminLogin from '../views/admin/AdminLogin.vue'
+import AdminMaps from '../views/admin/AdminMaps.vue'
+import AdminRiders from '../views/admin/AdminRiders.vue'
+import AdminCustomers from '../views/admin/AdminCustomers.vue'
+import UserProfile from '../components/UserProfile.vue'
 
 
 Vue.use(VueRouter)
@@ -25,6 +30,13 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+
+
+  {
+    path: '/user/profile',
+    name: 'UserProfile',
+    component: UserProfile
   },
 
 
@@ -100,14 +112,50 @@ const routes = [
       requiredRole: 'rider',
     },
   },
+
   {
-    path: '/admin-home/:id',
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLogin
+  },
+  
+  {
+    path: '/admin/home/:id',
     name: 'AdminHome',
     component: AdminHome,
     meta: {
-      requiredRole: 'admin',
+       requiredRole: 'admin',
     },
   },
+
+  {
+    path: '/admin/maps/:id',
+    name: 'AdminMaps',
+    component: AdminMaps,
+    meta: {
+       requiredRole: 'admin',
+    },
+  },
+
+  {
+    path: '/admin/riders/:id',
+    name: 'AdminRiders',
+    component: AdminRiders,
+    meta: {
+       requiredRole: 'admin',
+    },
+  },
+
+  {
+    path: '/admin/customers/:id',
+    name: 'AdminCustomers',
+    component: AdminCustomers,
+    meta: {
+       requiredRole: 'admin',
+    },
+  },
+
+
 
 
 ]

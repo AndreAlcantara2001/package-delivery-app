@@ -2,6 +2,10 @@
   <v-container fluid fill-height>
     <div class="background"></div>
 
+    <div v-if="showLoading">
+      <LoadingComp />
+    </div>
+
     <v-row class="justify-center">
       <v-col cols="12" lg='4' sm="6" md="5">
 
@@ -54,19 +58,27 @@
   
 <script>
 import axios from 'axios';
-
+import LoadingComp from '../../components/LoadingComp.vue'
 export default {
+
+  components:{
+    LoadingComp,
+  },
   data() {
     return {
       showError: false,
+      showLoading: false,
       loginData: {
         username: '',
-        password: ''
+        password: '',
       }
     };
   },
   methods: {
     loginRider() {
+
+      this.showLoading = true;
+
       if (this.$refs.form.validate()) {
         axios.post('http://localhost:7071/rider/login', this.loginData)
           .then(response => {
@@ -77,6 +89,8 @@ export default {
             this.$router.push({ name: 'RiderHome', params: { id: response.data.riderId } });
             this.loginData.username = '';
             this.loginData.password = '';
+
+            this.showLoading = false;
           })
           .catch(error => {
             // Error handling
@@ -85,8 +99,12 @@ export default {
               // Unauthorized: Incorrect username or password
               // Display an error message or take appropriate action
 
+              this.showLoading = false;
               this.showError = true;
 
+              setTimeout(() => {
+                this.showError = false;
+              }, 3000);
               this.loginData.username = '';
               this.loginData.password = '';
 

@@ -50,6 +50,10 @@
         </v-card>
       </div>
     </div>
+
+    <div v-else>
+      <LoadingComp />
+    </div>
   </div>
 </template>
 
@@ -60,11 +64,13 @@ import { connectWebSocket, sendMessage, subscribeToDestination, disconnectWebSoc
 import LeafletMap from '../leafletMap/LeafletMap.vue';
 import LRoutingMachine from '../leafletMap/LRoutingMachine.vue';
 import L from 'leaflet';
+import LoadingComp from '@/components/LoadingComp.vue';
 
 export default {
   components: {
     LeafletMap,
     LRoutingMachine,
+    LoadingComp,
   },
 
   data() {
@@ -100,7 +106,7 @@ export default {
   },
 
   created() {
-    connectWebSocket(this.subscribeWebSocketMessage);
+    connectWebSocket(this.subscribeWebSocketMessage());
 
     setInterval(() => {
       this.trackRiderLocation();

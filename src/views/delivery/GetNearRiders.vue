@@ -1,7 +1,7 @@
 <template>
   <div>
     <CustomerNavBar />
-    <div class="near-riders-container">
+    <div class="near-riders-container mt-10">
       <v-container>
         <v-row v-if="nearRiders.length > 0">
           <v-col cols="12">

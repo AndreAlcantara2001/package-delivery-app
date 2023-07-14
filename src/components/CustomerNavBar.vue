@@ -1,17 +1,24 @@
 <template>
-    <v-app-bar app color="primary" dark style="margin-bottom: 5rem;">
+    <v-app-bar app color="primary" dark>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
-        <v-toolbar-title>Customer Navigation</v-toolbar-title>
+        <v-toolbar-title v-if="isCustomer">Customer Navigation</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn text to="/customer/profile" v-if="isCustomer" exact>
-            Profile
+
+        <v-text-field text v-if="showTrack" exact placeholder="Track Delivery" v-model="deliveryId">
+        </v-text-field>
+
+        <v-btn icon @click="toggleSearch">
+            <v-icon>mdi-magnify</v-icon>
         </v-btn>
-        <v-btn text to="/customer/history" v-if="isCustomer" exact>
-            History
+
+        <v-btn text v-if="isCustomer" exact>
+            <router-link class="link" :to="{ name: 'Profile', params: { id: customerId } }">Profile</router-link>
         </v-btn>
-        <v-btn text to="/customer/track-delivery" v-if="isCustomer" exact>
-            Track Delivery
+        <v-btn text v-if="isCustomer" exact>
+            <router-link class="link"
+                :to="{ name: 'CustomerDeliveryHistory', params: { id: customerId } }">History</router-link>
         </v-btn>
+
 
         <v-btn icon v-if="isCustomer" @click="showNotifications = !showNotifications">
             <v-badge v-if="hasCustomerNotifications" :content="userNotifications.length" color="error" overlap>
@@ -43,11 +50,17 @@
   
 <script>
 export default {
+
+    props: [
+        'customerId',
+    ],
     name: 'CustomerNavBar',
     data() {
         return {
             showNotifications: false,
             userNotifications: [],
+            deliveryId: '',
+            showTrack: false,
         }
     },
     computed: {
@@ -67,12 +80,19 @@ export default {
 
     },
 
-    mounted(){
-        setInterval( () => {
+    mounted() {
+        setInterval(() => {
             this.getNotification();
         }, 100);
     },
     methods: {
+        toggleSearch(){
+
+            if(this.showTrack){
+                this.$router.push({name: "TrackRider", params: {id: this.deliveryId}})
+            }
+            this.showTrack = !this.showTrack;
+        },
         getNotification() {
             const notifications = JSON.parse(sessionStorage.getItem('notifications'));
             if (notifications) {
@@ -89,4 +109,14 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+
+
+.link {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
   
