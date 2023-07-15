@@ -4,51 +4,62 @@
       <h3>Rider id: {{ trackRiderData.riderId }}</h3>
 
       <div v-if="!show">
-        <LeafletMap :riderLocation="[trackRiderData.latitude, trackRiderData.longitude]" />
+        <LeafletMap :currentLocation="[trackRiderData.latitude, trackRiderData.longitude]" />
       </div>
-      <div class="delivery-card" v-if="show">
-        <v-card class="mx-auto" max-width="344">
 
-          <div v-if="sCor.length > 1">
-            <LRoutingMachine :sCor="sCor" :eCor="eCor" />
+      <div v-if="show">
+
+        <div v-for="(seCor, index) in seCors" :key="index">
+          <div class="delivery-card" v-if="showCard[index]">
+            <v-card class="mx-auto" max-width="344">
+
+              <div v-if="seCor.sCor.length > 1">
+                <LRoutingMachine :sCor="[seCor.sCor[0], seCor.sCor[1]]" :eCor="[seCor.eCor[0], seCor.eCor[1]]" />
+              </div>
+
+              <v-card-title>
+                Request Delivery ID: {{ trackRiderData.preDelivery.preDeliId }}
+              </v-card-title>
+
+              <v-card-subtitle class="text-h5">
+                Pickup address: {{ trackRiderData.preDelivery.pickupAddressText }}
+              </v-card-subtitle>
+
+              <v-card-actions>
+                <v-btn color="success lighten-2" text @click="handleConfirmDelivery(index)">
+                  Confirm
+                </v-btn>
+                <v-btn color="warning lighten-2" text @click="showCard[index] = false">
+                  Cancel
+                </v-btn>
+
+                <v-spacer></v-spacer>
+
+                <v-btn icon @click="showExtend = !showExtend">
+                  <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                </v-btn>
+              </v-card-actions>
+
+              <v-expand-transition>
+                <div v-show="showExtend">
+                  <v-divider></v-divider>
+
+                  <v-card-text>
+                    Customer name: Customer Name<br>
+                    Receiver name: {{ trackRiderData.preDelivery.receiverName }}<br>
+                    Receiver Phone Number: {{ trackRiderData.preDelivery.receiverPhone }}<br>
+                  </v-card-text>
+                </div>
+              </v-expand-transition>
+            </v-card>
           </div>
-
-          <v-card-title>
-            Request Delivery ID: {{ trackRiderData.preDelivery.preDeliId }}
-          </v-card-title>
-
-          <v-card-subtitle class="text-h5">
-            Pickup address: {{ trackRiderData.preDelivery.pickupAddressText }}
-          </v-card-subtitle>
-
-          <v-card-actions>
-            <v-btn color="success lighten-2" text @click="handleConfirmDelivery">
-              Confirm
-            </v-btn>
-            <v-btn color="warning lighten-2" text @click="show = !show">
-              Cancel
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <v-btn icon @click="showExtend = !showExtend">
-              <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-            </v-btn>
-          </v-card-actions>
-
-          <v-expand-transition>
-            <div v-show="showExtend">
-              <v-divider></v-divider>
-
-              <v-card-text>
-                Customer name: Customer Name<br>
-                Receiver name: {{ trackRiderData.preDelivery.receiverName }}<br>
-                Receiver Phone Number: {{ trackRiderData.preDelivery.receiverPhone }}<br>
-              </v-card-text>
-            </div>
-          </v-expand-transition>
-        </v-card>
+        </div>
       </div>
+
+       <div v-if="showCard[selectedDeliveryIndex]">
+      <LRoutingMachine :sCor="seCors[selectedDeliveryIndex].sCor" :eCor="seCors[selectedDeliveryIndex].eCor" />
+    </div>
+
     </div>
 
     <div v-else>
@@ -75,14 +86,15 @@ export default {
 
   data() {
     return {
-      sCor: [],
-      eCor: [],
+      seCors: [],
+      selectedDeliveryIndex: 0,
       center: {},
       zoom: 12,
       osmUrl: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       showExtend: false,
       show: false,
+      showCard: [],
 
       confirmDelivery: {
         preDeliId: '',
@@ -106,12 +118,12 @@ export default {
   },
 
   created() {
-    connectWebSocket(this.subscribeWebSocketMessage());
+    connectWebSocket(this.subscribeWebSocketMessage);
 
     setInterval(() => {
       this.trackRiderLocation();
     }, 10000);
-    
+
   },
 
   mounted() {
@@ -165,8 +177,9 @@ export default {
       this.trackRiderData.status = status;
     },
 
-    handleConfirmDelivery() {
+    handleConfirmDelivery(index) {
 
+      this.selectedDeliveryIndex = index;
 
       axios.post('http://localhost:7071/delivery/confirm', this.confirmDelivery)
         .then(response => {
@@ -176,6 +189,10 @@ export default {
           this.trackRiderData.deliveryId = respData.deliveryId;
 
           console.log("Rider track data: ", this.trackRiderData);
+
+ 
+
+          this.showCard.splice(index, 1);
 
         }).catch(error => console.error(error));
 
@@ -202,14 +219,22 @@ export default {
         'Request pre Delivery Response from server to each rider',
         this.trackRiderData.preDelivery
       );
+ 
+       const startCors = [preDeliveryData.pickupLat, preDeliveryData.pickupLng];
 
-      this.sCor[0] = preDeliveryData.pickupLat;
-      this.sCor[1] = preDeliveryData.pickupLng;
+       const endCors = [preDeliveryData.destinationLat, preDeliveryData.destinationLng];
 
-      this.eCor[0] = preDeliveryData.destinationLat;
-      this.eCor[1] = preDeliveryData.destinationLng;
+
+       const corObj = {
+         sCor: startCors,
+         eCor: endCors,
+       };
+
+       this.seCors.push(corObj); 
+      console.log(this.seCors);
 
       this.show = true;
+      this.showCard.push(true);
     },
 
     handleBeforeUnload(event) {
@@ -228,4 +253,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.riderNavigate {
+  width: 500px;
+  height: 500px;
+}
+</style>

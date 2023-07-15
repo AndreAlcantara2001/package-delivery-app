@@ -1,7 +1,7 @@
 <template>
     <div v-if="currentLocation || riderLocation">
 
-        <l-map style="height: 500px ; border-radius: 30px;" :zoom="zoom" :center="currentLocation || riderLocation">
+        <l-map style="height: 500px ; border-radius: 30px;" :zoom="zoom" :center="currentLocation">
             <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
 
             <div v-if="riderLocation">

@@ -10,6 +10,8 @@ import CustomerHome from '../views/customer/CustomerHome.vue'
 import PreDelivery from '../views/delivery/PreDelivery.vue'
 import GetNearRiders from '../views/delivery/GetNearRiders.vue'
 import TrackRider from '../views/delivery/TrackRider.vue'
+import CustomerProfile from '../views/customer/CustomerProfile.vue'
+import CustomerDeliveryHistory from '../views/customer/CustomerDeliveryHistory.vue'
 
 import RiderLogin from '../views/rider/RiderLogin.vue'
 import RiderRegistration from '../views/rider/RiderRegistration.vue'
@@ -66,6 +68,24 @@ const routes = [
     path: '/customer-home/:id',
     name: 'CustomerHome',
     component: CustomerHome,
+    meta: {
+      requiredRole: 'customer',
+    },
+  },
+
+  {
+    path: '/customer/profile/:id',
+    name: 'CustomerProfile',
+    component: CustomerProfile,
+    meta: {
+      requiredRole: 'customer',
+    },
+  },
+
+  {
+    path: '/customer/delivery-history/:id',
+    name: 'CustomerDeliveryHistory',
+    component: CustomerDeliveryHistory,
     meta: {
       requiredRole: 'customer',
     },

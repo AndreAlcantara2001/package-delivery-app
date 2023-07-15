@@ -90,6 +90,7 @@ export default {
 
             // Perform further actions or navigate to a different page
             this.$store.commit('setUserRole', 'customer');
+            sessionStorage.setItem('customer', JSON.stringify(response.data));
             this.$router.push({ name: 'CustomerHome', params: { id: response.data.customerId } });
             this.loginData.username = '';
             this.loginData.password = '';

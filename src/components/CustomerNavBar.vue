@@ -12,7 +12,11 @@
         </v-btn>
 
         <v-btn text v-if="isCustomer" exact>
-            <router-link class="link" :to="{ name: 'Profile', params: { id: customerId } }">Profile</router-link>
+            <router-link class="link" :to="{ name: 'CustomerHome', params: { id: customerId } }">Home</router-link>
+        </v-btn>
+
+        <v-btn text v-if="isCustomer" exact>
+            <router-link class="link" :to="{ name: 'CustomerProfile', params: { id: customerId } }">Profile</router-link>
         </v-btn>
         <v-btn text v-if="isCustomer" exact>
             <router-link class="link"

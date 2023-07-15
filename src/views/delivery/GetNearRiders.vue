@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomerNavBar />
+    <CustomerNavBar :customerId="customer.customerId"/>
     <div class="near-riders-container mt-10">
       <v-container>
         <v-row v-if="nearRiders.length > 0">
@@ -38,12 +38,20 @@ export default {
   data() {
     return {
 
+      customer: {},
+
       delivery: {},
       preDeliId: this.$route.params.id,
       nearRiders: [],
       pickupLocation: [],
     }
   },
+
+  created(){
+     this.customer = JSON.parse(sessionStorage.getItem('customer'));
+  },
+
+
   mounted() {
     connectWebSocket(this.subscribeWebSocketMessage);
     this.getNearRiders();

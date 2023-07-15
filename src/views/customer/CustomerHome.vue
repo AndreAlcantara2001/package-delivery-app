@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomerNavBar />
+    <CustomerNavBar :customerId="customer.customerId"/>
 
     <div class="mt-15">
 
@@ -118,7 +118,7 @@ export default {
 
   methods: {
     navigateToRequestDelivery() {
-      this.$router.push({ name: 'PreDelivery', params: { id: this.$route.params.id } });
+      this.$router.push({ name: 'PreDelivery', params: { id: this.customer.customerId } });
     },
 
     navigateToTrackDelivery() {

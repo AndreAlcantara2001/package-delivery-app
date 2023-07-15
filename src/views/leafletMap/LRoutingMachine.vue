@@ -52,7 +52,8 @@ export default {
           L.latLng(this.eCor[0], this.eCor[1])
         ],
         router: L.Routing.osrmv1({
-          serviceUrl: 'http://127.0.0.1:5000/route/v1'
+          //serviceUrl: 'http://127.0.0.1:5000/route/v1' //
+          serviceUrl: 'https://router.project-osrm.org/route/v1'
         }),
         createMarker: function (i, wp, n) {
           var marker_icon = new L.Icon.Default();

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomerNavBar/>
+    <CustomerNavBar :customerId="preDelivery.customerId"/>
     <v-row style="margin-top: 5rem;">
 
       <v-col cols="12" lg="6" md="12">
@@ -17,17 +17,18 @@
               <v-form @submit.prevent="submitRequestDelivery">
                 <v-row>
                   <v-col cols="12" lg="6" md="6" class="inputCol">
-                    <v-text-field v-model="preDelivery.customerId" label="Customer Id" required outlined></v-text-field>
+                    <v-text-field v-model="preDelivery.receiverName" label="Reciever Name" required
+                      outlined></v-text-field>
                   </v-col>
                   <v-col cols="12" lg="6" md="6" class="inputCol">
-                    <v-text-field v-model="preDelivery.receiverName" label="Reciever Name" required
+                    <v-text-field v-model="preDelivery.receiverPhone" label="Receiver Phone Number" required
                       outlined></v-text-field>
                   </v-col>
                 </v-row>
 
                 <v-row>
                   <v-col cols="12" lg="6" md="6" class="inputCol">
-                    <v-text-field v-model="preDelivery.receiverPhone" label="Receiver Phone Number" required
+                    <v-text-field v-model="preDelivery.itemWeight" label="Item Weight (KG)" required
                       outlined></v-text-field>
                   </v-col>
                   <v-col cols="12" lg="6" md="6" class="inputCol">
@@ -47,11 +48,6 @@
                   </v-col>
                 </v-row>
                 <v-row>
-
-                  <v-col cols="12" lg="6" md="6" class="inputCol">
-                    <v-text-field v-model="preDelivery.itemWeight" label="Item Weight (KG)" required
-                      outlined></v-text-field>
-                  </v-col>
 
                   <v-col cols="12" lg="6" md="6" class="inputCol" v-if="preDelivery.distance">
                     <v-text-field :value="calCost()" label="Cost" required outlined readonly></v-text-field>
