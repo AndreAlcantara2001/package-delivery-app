@@ -96,7 +96,7 @@
 </template>
   
 <script>
-import CustomerNavBar from '@/components/CustomerNavBar.vue'
+import CustomerNavBar from '@/components/UserNavBar.vue'
 import axios from 'axios'
 
 export default {

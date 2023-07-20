@@ -6,19 +6,21 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userRole: null,
-    userNotifications: [],
+    userData: null,
+
   },
   getters: {
 
   },
   mutations: {
+
     setUserRole(state, role) {
       state.userRole = role;
     },
 
-  setUserNotifications(state, { role, notifications}){
-    state.userNotifications = [{ role, notifications}];
-  }
+    setUserData(state, data){
+      state.userData = data;
+    }
 
   },
   actions: {

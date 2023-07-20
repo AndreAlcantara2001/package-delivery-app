@@ -22,7 +22,7 @@ import AdminLogin from '../views/admin/AdminLogin.vue'
 import AdminMaps from '../views/admin/AdminMaps.vue'
 import AdminRiders from '../views/admin/AdminRiders.vue'
 import AdminCustomers from '../views/admin/AdminCustomers.vue'
-import UserProfile from '../components/UserProfile.vue'
+import RiderProfile from '../views/rider/RiderProfile.vue'
 
 
 Vue.use(VueRouter)
@@ -34,13 +34,7 @@ const routes = [
     component: HomeView
   },
 
-
-  {
-    path: '/user/profile',
-    name: 'UserProfile',
-    component: UserProfile
-  },
-
+  //customer
 
   {
     path: '/about',
@@ -118,6 +112,8 @@ const routes = [
   },
 
 
+  //rider
+
   {
     path: '/rider-login',
     name: 'RiderLogin',
@@ -133,6 +129,17 @@ const routes = [
     },
   },
 
+  {
+    path: '/rider/profile/:id',
+    name: 'RiderProfile',
+    component: RiderProfile,
+    meta: {
+      requiredRole: 'rider',
+    },
+  },
+
+
+  //admin
   {
     path: '/admin/login',
     name: 'AdminLogin',
@@ -193,13 +200,13 @@ router.beforeEach((to, from, next) => {
   if (requiredRole && store.state.userRole !== requiredRole) {
     // Redirect to an appropriate route based on the user's role
     switch (store.state.userRole) {
-      case 'customer':
+      case 'CUSTOMER':
         next({ name: 'CustomerLogin' });
         break;
-      case 'rider':
+      case 'RIDER':
         next({ name: 'RiderLogin' });
         break;
-      case 'admin':
+      case 'ADMIN':
         next({ name: 'AdminLogin' });
         break;
       default:

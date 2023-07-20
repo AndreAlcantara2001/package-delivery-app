@@ -24,7 +24,7 @@
 import axios from 'axios';
 import LeafletMap from '../leafletMap/LeafletMap.vue';
 import { connectWebSocket, subscribeToDestination } from '@/utils/websocketconfig';
-import CustomerNavBar from '@/components/CustomerNavBar.vue';
+import CustomerNavBar from '@/components/UserNavBar.vue';
 
 export default {
 
@@ -88,8 +88,6 @@ export default {
       const deliveryData = JSON.parse(message.body);
       this.delivery = deliveryData;
       console.log("Delivery : ", this.delivery);
-
-      sessionStorage.setItem('notifications', JSON.stringify(this.delivery))
 
       this.$router.push({ name: 'TrackRider', params: { id: this.delivery.deliveryId } })
     },

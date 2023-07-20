@@ -119,7 +119,7 @@
 
 
 <script>
-import CustomerNavBar from '../../components/CustomerNavBar.vue'
+import CustomerNavBar from '../../components/UserNavBar.vue'
 import L from 'leaflet';
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 import axios from 'axios';

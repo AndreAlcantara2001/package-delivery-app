@@ -86,6 +86,15 @@ export default {
 
   data() {
     return {
+
+      notificationData: {
+            notiData: 'Rider id ' + this.trackRiderData.riderId + 'is assigned the delivery id ' + this.trackRiderData.deliveryId,
+            redirectUrl: '',
+            readed: false,
+            userId: '',
+            role: '',
+          },
+      
       seCors: [],
       selectedDeliveryIndex: 0,
       center: {},
@@ -177,11 +186,11 @@ export default {
       this.trackRiderData.status = status;
     },
 
-    handleConfirmDelivery(index) {
+    async handleConfirmDelivery(index) {
 
       this.selectedDeliveryIndex = index;
 
-      axios.post('http://localhost:7071/delivery/confirm', this.confirmDelivery)
+      await axios.post('http://localhost:7071/delivery/confirm', this.confirmDelivery)
         .then(response => {
 
           const respData = response.data;
@@ -190,9 +199,27 @@ export default {
 
           console.log("Rider track data: ", this.trackRiderData);
 
- 
-
           this.showCard.splice(index, 1);
+
+          //customer
+          this.notificationData.userId = this.trackRiderData.preDelivery.customerId;
+          this.notificationData.role = "CUSTOMER";
+          this.notificationData.redirectUrl = "/package-delivery/rider/track-rider/" + this.trackRiderData.deliveryId;
+
+          axios.post("http://localhost:7071/notification/save", this.notificationData)
+          .then(response => {
+            console.log(response)
+          }).catch(error => console.error(error))
+          //admin
+
+          this.notificationData.userId = 1;//admin ID 
+          this.notificationData.role = "ADMIN";
+          this.notificationData.redirectUrl = '';
+
+          axios.post("http://localhost:7071/notification/save", this.notificationData)
+          .then(response => {
+            console.log(response)
+          }).catch(error => console.error(error))
 
         }).catch(error => console.error(error));
 
