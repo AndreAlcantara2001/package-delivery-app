@@ -1,35 +1,39 @@
 <template>
   <div>
-    <div v-if="trackRiderData.latitude && trackRiderData.longitude">
-      <h3>Rider id: {{ trackRiderData.riderId }}</h3>
+    <div v-if="trackRiderData.latitude != null && trackRiderData.longitude != null">
 
-      <div v-if="!show">
+      <UserNavBar />
+
+      <h3 class="mt-15">Rider id: {{ trackRiderData.riderId }}</h3>
+
+      <div v-if="!show" class="mt-1">
         <LeafletMap :currentLocation="[trackRiderData.latitude, trackRiderData.longitude]" />
       </div>
 
       <div v-if="show">
 
-        <div v-for="(seCor, index) in seCors" :key="index">
-          <div class="delivery-card" v-if="showCard[index]">
+        <div v-for="requestDelivery in requestDeliveryArray" :key="requestDelivery.preDeliId">
+          <div class="delivery-card" v-if="requestDelivery">
             <v-card class="mx-auto" max-width="344">
 
-              <div v-if="seCor.sCor.length > 1">
-                <LRoutingMachine :sCor="[seCor.sCor[0], seCor.sCor[1]]" :eCor="[seCor.eCor[0], seCor.eCor[1]]" />
+              <div v-if="requestDelivery.pickupLat != null && requestDelivery.pickupLng != null">
+                <LRoutingMachine :sCor="[requestDelivery.pickupLat, requestDelivery.pickupLng]"
+                  :eCor="[requestDelivery.destinationLat, requestDelivery.destinationLng]" />
               </div>
 
               <v-card-title>
-                Request Delivery ID: {{ trackRiderData.preDelivery.preDeliId }}
+                Request Delivery ID: {{ requestDelivery.preDeliId }}
               </v-card-title>
 
               <v-card-subtitle class="text-h5">
-                Pickup address: {{ trackRiderData.preDelivery.pickupAddressText }}
+                Pickup address: {{ requestDelivery.pickupAddressText }}
               </v-card-subtitle>
 
               <v-card-actions>
-                <v-btn color="success lighten-2" text @click="handleConfirmDelivery(index)">
+                <v-btn color="success lighten-2" text @click="handleConfirmDelivery(requestDelivery)">
                   Confirm
                 </v-btn>
-                <v-btn color="warning lighten-2" text @click="showCard[index] = false">
+                <v-btn color="warning lighten-2" text @click="cancelRequestDelivery(requestDelivery)">
                   Cancel
                 </v-btn>
 
@@ -45,9 +49,9 @@
                   <v-divider></v-divider>
 
                   <v-card-text>
-                    Customer name: Customer Name<br>
-                    Receiver name: {{ trackRiderData.preDelivery.receiverName }}<br>
-                    Receiver Phone Number: {{ trackRiderData.preDelivery.receiverPhone }}<br>
+                    Customer name: {{ customerName }}<br>
+                    Receiver name: {{ requestDelivery.receiverName }}<br>
+                    Receiver Phone Number: {{ requestDelivery.receiverPhone }}<br>
                   </v-card-text>
                 </div>
               </v-expand-transition>
@@ -56,9 +60,33 @@
         </div>
       </div>
 
-       <div v-if="showCard[selectedDeliveryIndex]">
-      <LRoutingMachine :sCor="seCors[selectedDeliveryIndex].sCor" :eCor="seCors[selectedDeliveryIndex].eCor" />
-    </div>
+
+      <div v-if="ongoingDelivery != null" class="my-1">
+        <v-card class="mx-auto" max-width="344" outlined>
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="text-overline mb-4">
+                Ongoing Delivery
+              </div>
+              <v-list-item-title class="text-h5 mb-1">
+                Delivery ID: {{ ongoingDelivery.deliveryId }}
+              </v-list-item-title>
+              <v-list-item-subtitle>{{ ongoingDelivery.pickupAddressText }}</v-list-item-subtitle>
+            </v-list-item-content>
+
+            <v-list-item-avatar tile size="80" color="grey">
+              <v-avatar rounded="0" size="80"><v-img src="../../assets/profileAvatar.jpg"></v-img></v-avatar>
+            </v-list-item-avatar>
+          </v-list-item>
+
+          <v-card-actions>
+            <v-btn outlined rounded text @click="navigateToRiderDeliveryNavigate" color="#000">
+              Button
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </div>
+
 
     </div>
 
@@ -76,31 +104,27 @@ import LeafletMap from '../leafletMap/LeafletMap.vue';
 import LRoutingMachine from '../leafletMap/LRoutingMachine.vue';
 import L from 'leaflet';
 import LoadingComp from '@/components/LoadingComp.vue';
+import { mapGetters } from 'vuex';
+import UserNavBar from '@/components/UserNavBar.vue';
 
 export default {
   components: {
     LeafletMap,
     LRoutingMachine,
     LoadingComp,
+    UserNavBar,
   },
 
   data() {
     return {
 
-      notificationData: {
-            notiData: 'Rider id ' + this.trackRiderData.riderId + 'is assigned the delivery id ' + this.trackRiderData.deliveryId,
-            redirectUrl: '',
-            readed: false,
-            userId: '',
-            role: '',
-          },
-      
+      ongoingDelivery: null,
+
+      requestDeliveryArray: [],
+
+      customerName: '',
       seCors: [],
       selectedDeliveryIndex: 0,
-      center: {},
-      zoom: 12,
-      osmUrl: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       showExtend: false,
       show: false,
       showCard: [],
@@ -111,11 +135,12 @@ export default {
       },
 
       trackRiderData: {
-        deliveryId: 0,
+        deliveryId: null,
         preDelivery: null,
         riderId: this.$route.params.id,
-        latitude: '',
-        longitude: '',
+        latitude: null,
+        longitude: null,
+        deliStatus: null,
         postalCode: '',
         status: 'OFFLINE',
       },
@@ -127,20 +152,51 @@ export default {
   },
 
   created() {
+
+    console.log("User data: ", this.userData)
+
+    if(this.userData != this.trackRiderData.deliStatus){
+    this.trackRiderData.deliStatus = this.userData.deliStatus;
+    }else{
+      this.trackRiderData.deliStatus = 'FREE';
+    }
+
     connectWebSocket(this.subscribeWebSocketMessage);
 
-    setInterval(() => {
-      this.trackRiderLocation();
-    }, 10000);
+     setInterval(() => {
+       this.trackRiderLocation();
+     },10000);
+  },
 
+  computed: {
+    ...mapGetters(['userData'])
   },
 
   mounted() {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
 
+    this.getDelivery();
   },
 
   methods: {
+
+    cancelRequestDelivery(requestDelivery){
+      this.requestDeliveryArray.pop(requestDelivery);
+    },
+
+    navigateToRiderDeliveryNavigate() {
+      this.$router.push({ name: 'RiderDeliveryNavigate', params: { id: this.trackRiderData.riderId } })
+    },
+
+    async getDelivery() {
+      await axios.get(`http://localhost:7071/rider/delivery-ongoing/${this.trackRiderData.riderId}`)
+        .then(response => {
+          const respData = response.data;
+          this.ongoingDelivery = respData;
+          this.$store.commit('setDelivery', this.ongoingDelivery);
+        }).catch(error => console.error(error));
+    },
+
     getPostalCode(lat, lng) {
       const language = 'my';
       return new Promise((resolve, reject) => {
@@ -166,6 +222,7 @@ export default {
     },
 
     trackRiderLocation() {
+      //testing getCurrentPosition //Production watchPosition
       navigator.geolocation.getCurrentPosition(
         (position) => {
           this.trackRiderData.latitude = position.coords.latitude;
@@ -174,6 +231,8 @@ export default {
             this.trackRiderData.latitude,
             this.trackRiderData.longitude
           );
+
+          console.log(this.trackRiderData);
           this.sendWebSocketMessage(this.trackRiderData);
         },
         (error) => {
@@ -186,11 +245,11 @@ export default {
       this.trackRiderData.status = status;
     },
 
-    async handleConfirmDelivery(index) {
+    handleConfirmDelivery(index) {
 
       this.selectedDeliveryIndex = index;
 
-      await axios.post('http://localhost:7071/delivery/confirm', this.confirmDelivery)
+      axios.post('http://localhost:7071/delivery/confirm', this.confirmDelivery)
         .then(response => {
 
           const respData = response.data;
@@ -199,27 +258,10 @@ export default {
 
           console.log("Rider track data: ", this.trackRiderData);
 
+          this.trackRiderData.deliStatus = 'PROCESSING';
+          this.sendWebSocketMessage(this.trackRiderData)
+
           this.showCard.splice(index, 1);
-
-          //customer
-          this.notificationData.userId = this.trackRiderData.preDelivery.customerId;
-          this.notificationData.role = "CUSTOMER";
-          this.notificationData.redirectUrl = "/package-delivery/rider/track-rider/" + this.trackRiderData.deliveryId;
-
-          axios.post("http://localhost:7071/notification/save", this.notificationData)
-          .then(response => {
-            console.log(response)
-          }).catch(error => console.error(error))
-          //admin
-
-          this.notificationData.userId = 1;//admin ID 
-          this.notificationData.role = "ADMIN";
-          this.notificationData.redirectUrl = '';
-
-          axios.post("http://localhost:7071/notification/save", this.notificationData)
-          .then(response => {
-            console.log(response)
-          }).catch(error => console.error(error))
 
         }).catch(error => console.error(error));
 
@@ -227,8 +269,13 @@ export default {
 
     },
 
+    setRiderDeliStatus(status) {
+      this.trackRiderData.deliStatus = status;
+    },
+
     sendWebSocketMessage(rider) {
       this.setRiderStatus('ONLINE');
+
       console.log('Rider data:', rider);
       sendMessage('/app/track-rider', JSON.stringify(rider));
     },
@@ -239,29 +286,31 @@ export default {
 
     handleRequestDelivery(message) {
       const preDeliveryData = JSON.parse(message.body);
-      this.trackRiderData.preDelivery = preDeliveryData;
-      this.confirmDelivery.preDeliId = preDeliveryData.preDeliId;
 
-      console.log(
-        'Request pre Delivery Response from server to each rider',
-        this.trackRiderData.preDelivery
-      );
- 
-       const startCors = [preDeliveryData.pickupLat, preDeliveryData.pickupLng];
+      if (this.trackRiderData.deliveryId == null && this.trackRiderData.preDelivery == null) {
+        // If the rider is currently free, update the preDeliveryData and deliStatus
+        this.trackRiderData.preDelivery = preDeliveryData;
+        this.confirmDelivery.preDeliId = preDeliveryData.preDeliId;
+        this.requestDeliveryArray.push(preDeliveryData);
+        this.customerName = this.getCustomerName(preDeliveryData.customerId);
+        this.trackRiderData.deliStatus = 'PENDING';
+        this.sendWebSocketMessage(this.trackRiderData);
+        this.show = true;
+        this.showCard.push(true);
+      } else {
+        
+        console.log('Received preDeliveryData when rider is not free:', preDeliveryData);
+      }
+    },
 
-       const endCors = [preDeliveryData.destinationLat, preDeliveryData.destinationLng];
 
-
-       const corObj = {
-         sCor: startCors,
-         eCor: endCors,
-       };
-
-       this.seCors.push(corObj); 
-      console.log(this.seCors);
-
-      this.show = true;
-      this.showCard.push(true);
+    getCustomerName(id) {
+      axios.get("http://localhost:7071/customer/getById/" + id)
+        .then(response => {
+          const responseData = response.data;
+          const customerName = responseData.name;
+          return customerName;
+        }).catch(error => console.error(error));
     },
 
     handleBeforeUnload(event) {

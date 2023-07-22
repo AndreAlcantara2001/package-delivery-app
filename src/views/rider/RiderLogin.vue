@@ -84,8 +84,11 @@ export default {
           .then(response => {
             // Successful login
             console.log('Login Response:', response.data);
+
+            const rider = response.data;
             // Perform further actions or navigate to a different page
-            this.$store.commit('setUserRole', 'rider');
+            this.$store.commit('setUserRole', rider.role);
+            this.$store.commit('setUserData', rider);
             this.$router.push({ name: 'RiderHome', params: { id: response.data.riderId } });
             this.loginData.username = '';
             this.loginData.password = '';

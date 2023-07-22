@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import NotificationPopup from './NotificationPopup.vue';
 
 export default {
@@ -26,15 +27,14 @@ export default {
 
   computed: {
     notificationCount() {
-      return this.notifications.filter(notification => !notification.read).length;
+      return this.notifications.filter(notification => !notification.readed).length;
     },
   },
   methods: {
     toggleNotifications() {
       this.showNotifications = !this.showNotifications;
       if (this.showNotifications) {
-        // Fetch notifications for the current user from the backend
-        // and update the 'notifications' array.
+        axios.get("http://localhost:7071/notification/updateNoti")
       }
     },
   },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomerNavBar :customerId="customer.customerId"/>
+    <UserNavBar/>
 
     <div class="mt-15">
 
@@ -96,7 +96,7 @@
 </template>
   
 <script>
-import CustomerNavBar from '@/components/UserNavBar.vue'
+import UserNavBar from '@/components/UserNavBar.vue'
 import axios from 'axios'
 
 export default {
@@ -109,7 +109,7 @@ export default {
   },
 
   components: {
-    CustomerNavBar
+    UserNavBar
   },
 
   mounted() {

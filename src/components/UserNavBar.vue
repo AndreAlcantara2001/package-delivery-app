@@ -1,11 +1,44 @@
 <template>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app color="primary" height="50" dark>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
 
         <v-toolbar-title>UsEXPRESS</v-toolbar-title>
 
         <v-spacer></v-spacer>
+
+        <v-menu v-if="!userData">
+
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on" class="mx-10">
+                    Login
+                </v-btn>
+
+            </template>
+
+            <v-list style="font-size: 1rem">
+                <v-list-item @click="navigateTo('RiderLogin')">Rider</v-list-item>
+                <v-list-item @click="navigateTo('CustomerLogin')">Customer</v-list-item>
+            </v-list>
+
+        </v-menu>
+
+        <v-menu v-if="!userData">
+
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on" class="mx-10">
+                    Register
+                </v-btn>
+
+            </template>
+
+            <v-list style="font-size: 1rem">
+                <v-list-item @click="navigateTo('RiderRegistration')">Rider</v-list-item>
+                <v-list-item @click="navigateTo('CustomerRegistration')">Customer</v-list-item>
+            </v-list>
+
+        </v-menu>
+
 
         <!--Customer-->
         <div v-if="userRole === 'CUSTOMER'">
@@ -56,13 +89,8 @@
         </div>
         <NotificationPopup v-if="showNotifications" :notifications="notifications" @close="toggleNotifications" />
 
-        <v-btn text to="/customer-login" v-if="!isCustomer" exact>
-            Login
-        </v-btn>
-        <v-btn text to="/customer-registration" v-if="!isCustomer" exact>
-            Register
-        </v-btn>
-        <v-btn text to="/" v-if="isCustomer" exact @click="logout">
+
+        <v-btn text v-if="userData" exact @click="logout">
             Logout
         </v-btn>
     </v-app-bar>
@@ -70,53 +98,43 @@
   
 <script>
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 export default {
 
     name: 'CustomerNavBar',
     data() {
         return {
+
+            showLoginDialog: false,
+            showRegisterDialog: false,
             showNotifications: false,
-            notifications: [],
             showTrack: false,
             deliveryId: '',
         }
     },
     computed: {
-        computed: {
-
-            userRole() {
-                return this.$store.state.userRole;
-            },
-
-            userData() {
-                return this.$store.state.userData;
-            },
-
-            userId() {
-                if (this.userRole === "CUSTOMER") {
-                    return this.userData.customerId;
-                } else if (this.userRole == "RIDER") {
-                    return this.userData.riderId;
-                } else {
-                    return null;
-                }
-            },
-
-            notificationCount() {
-                return this.notifications.filter(notification => !notification.read).length;
-            },
-
-        },
+        ...mapGetters(['userId', 'userData', 'userRole', 'notificationCount']),
     },
     created() {
-        // Retrieve user notifications from session storage
-
+        this.showDialog();
 
     },
 
     mounted() {
     },
     methods: {
+        showDialog() {
+            if (!this.userData && !this.userId && !this.userRole) {
+                this.showLoginDialog = true;
+                this.showRegisterDialog = true;
+            }
+        },
+
+        navigateTo(routeName) {
+
+            this.$router.push({ name: routeName });
+        },
+
         toggleSearch() {
 
             if (this.showTrack) {
@@ -126,37 +144,36 @@ export default {
         },
 
         toggleNotifications() {
-      this.showNotifications = !this.showNotifications;
-      if (this.showNotifications) {
-        // Fetch notifications for the current user from the backend
-        // and update the 'notifications' array.
-        
-        if (this.userRole === "RIDER" ) {
-        axios.get(`http://localhost:7071/notification/get-rider-noti-by-id/${this.userId}`)
-        .then(reponse => {
-           const respData = reponse.data;
-            this.notifications = respData;
-        }).catch(error => console.error(error))
-    }else if (this.userRole === "CUSTOMER"){
-        axios.get(`http://localhost:7071/notification/get-cus-noti-by-id/${this.userId}`)
-        .then(reponse => {
-           const respData = reponse.data;
-            this.notifications = respData;
-        }).catch(error => console.error(error))
-    }else{
-        this.notifications = [];
-    }
+            this.showNotifications = !this.showNotifications;
+            if (this.showNotifications) {
+                // Fetch notifications for the current user from the backend
+                // and update the 'notifications' array.
 
-      }
-    },
+                if (this.userRole === "RIDER") {
+                    axios.get(`http://localhost:7071/notification/get-rider-noti-by-id/${this.userId}`)
+                        .then(reponse => {
+                            const respData = reponse.data;
+                            this.$store.commit('setNotifications', respData);
+                        }).catch(error => console.error(error))
+                } else if (this.userRole === "CUSTOMER") {
+                    axios.get(`http://localhost:7071/notification/get-cus-noti-by-id/${this.userId}`)
+                        .then(reponse => {
+                            const respData = reponse.data;
+                            this.$store.commit('setNotifications', respData);
+                        }).catch(error => console.error(error))
+                } else {
+                    this.notifications = [];
+                }
+
+            }
+        },
 
         logout() {
-            // Perform logout logic, clear user data from store and session storage
+            
             this.$store.commit('setUserRole', null);
             this.$store.commit('setUserData', null); // Clear the user role in Vuex
-            //sessionStorage.removeItem('userRole'); // Remove the user role from session storage
-            // ... Additional logout actions if needed
-            this.$router.push('/'); // Redirect to the home page or login page
+
+            this.$router.push({name: 'home'}); // Redirect to the home page or login page
         },
 
     },

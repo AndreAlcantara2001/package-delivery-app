@@ -101,7 +101,8 @@ export default {
                 email: '',
                 password: '',
                 address: '',
-                phoneNumber: ''
+                phoneNumber: '',
+                role: "RIDER",
             }
         };
     },

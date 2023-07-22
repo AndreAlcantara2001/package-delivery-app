@@ -88,9 +88,12 @@ export default {
             // Successful login
             console.log('Login Response:', response.data);
 
+            const customer = response.data;
+
             // Perform further actions or navigate to a different page
-            this.$store.commit('setUserRole', 'customer');
-            sessionStorage.setItem('customer', JSON.stringify(response.data));
+            this.$store.commit('setUserRole', customer.role);
+            this.$store.commit('setUserData', customer);
+
             this.$router.push({ name: 'CustomerHome', params: { id: response.data.customerId } });
             this.loginData.username = '';
             this.loginData.password = '';

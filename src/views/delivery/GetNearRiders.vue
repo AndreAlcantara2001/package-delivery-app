@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomerNavBar :customerId="customer.customerId"/>
+    <UserNavBar/>
     <div class="near-riders-container mt-10">
       <v-container>
         <v-row v-if="nearRiders.length > 0">
@@ -24,7 +24,8 @@
 import axios from 'axios';
 import LeafletMap from '../leafletMap/LeafletMap.vue';
 import { connectWebSocket, subscribeToDestination } from '@/utils/websocketconfig';
-import CustomerNavBar from '@/components/UserNavBar.vue';
+import UserNavBar from '@/components/UserNavBar.vue';
+import { mapGetters } from 'vuex';
 
 export default {
 
@@ -32,7 +33,7 @@ export default {
 
   components: {
     LeafletMap,
-    CustomerNavBar,
+    UserNavBar,
   },
 
   data() {
@@ -47,8 +48,12 @@ export default {
     }
   },
 
+  computed:{
+    ...mapGetters(['userId', 'userData']),
+  },
+
   created(){
-     this.customer = JSON.parse(sessionStorage.getItem('customer'));
+     this.customer = this.userData;
   },
 
 

@@ -1,10 +1,12 @@
 <template>
   <div>
     <div id="mapid">
+      <img src="../../assets/navigation.png" class="map-toggle" alt="Navigate" style="width: 50px; height: 50px; cursor: pointer;"
+        @click="toggleRoutingContainer">
     </div>
-    <div class="map-toggle">
-      <img src="../../assets/navigation.png" alt="Navigate" style="width: 50px; height: 50px; cursor: pointer;" @click="toggleRoutingContainer">
-    </div>
+    <!-- <div class="map-toggle">
+      
+    </div> -->
   </div>
 </template>
 
@@ -16,7 +18,7 @@ import "leaflet/dist/leaflet.css";
 
 
 export default {
-  props:[
+  props: [
     'sCor',
     'eCor',
   ],
@@ -55,7 +57,7 @@ export default {
           //serviceUrl: 'http://127.0.0.1:5000/route/v1' //
           serviceUrl: 'https://router.project-osrm.org/route/v1'
         }),
-        createMarker: function (i, wp, n) {
+        /* createMarker: function (i, wp, n) {
           var marker_icon = new L.Icon.Default();
           var marker = L.marker(wp.latLng, {
             draggable: false,
@@ -65,7 +67,43 @@ export default {
           console.log(i, n)
           return marker;
 
-        }
+        } */
+
+        createMarker: function (i, wp, n) {
+          // Define the icons for the start and end waypoints
+          var startIcon = L.icon({
+            iconUrl: require('@/assets/pickupMarker.png'),
+            iconSize: [32, 32], // Set the icon size for the start marker
+          });
+
+          var endIcon = L.icon({
+            iconUrl: require('@/assets/destinationMarker.png'),
+            iconSize: [32, 32], // Set the icon size for the end marker
+          });
+
+          // Check the index (i) to determine which marker icon to use
+          var marker;
+          if (i === 0) {
+            // This is the start waypoint
+            marker = L.marker(wp.latLng, {
+              draggable: false,
+              icon: startIcon,
+            });
+          } else if (i === n - 1) {
+            // This is the end waypoint
+            marker = L.marker(wp.latLng, {
+              draggable: false,
+              icon: endIcon,
+            });
+          } else {
+            // For other waypoints (if any), use the default marker icon
+            marker = L.marker(wp.latLng);
+          }
+
+          return marker;
+        },
+
+
       }).addTo(this.map);
 
     },
@@ -113,3 +151,4 @@ export default {
 }
 </style>
 
+my LRoutingMachine is like that

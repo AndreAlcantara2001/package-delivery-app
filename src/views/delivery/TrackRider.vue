@@ -1,33 +1,35 @@
 <template>
     <div>
-        <!-- <CustomerNavBar /> -->
+        <UserNavBar />
         <div class="pa-10 mt-15">
             <div v-if="rider.riderId > 0 && pickupLocation.length > 1" style="margin-top: 5rem;">
                 {{ rider }}
 
                 <div>
-                    <LRoutingMachine :sCor="pickupLocation" :eCor="[ rider.latitude , rider.longitude ]"/>
+                    <LRoutingMachine :sCor="[pickupLocation[0], pickupLocation[1]]" :eCor="[ rider.latitude , rider.longitude ]"/>
                 </div>
                 
             </div>
             <div v-else>
-                Delivery not found
+                <LoadingComp/>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-// import CustomerNavBar from '../../components/CustomerNavBar.vue'
 import { connectWebSocket, subscribeToDestination } from '@/utils/websocketconfig';
 import LRoutingMachine from '../leafletMap/LRoutingMachine.vue';
 import axios from 'axios';
+import UserNavBar from '@/components/UserNavBar.vue';
+import LoadingComp from '@/components/LoadingComp.vue';
 
 export default {
 
     components: {
         LRoutingMachine,
-        // CustomerNavBar,
+        UserNavBar,
+        LoadingComp,
     },
 
     data() {
@@ -39,6 +41,7 @@ export default {
 
             pickupLocation: [],
             riderLocation: [],
+
         }
     },
 

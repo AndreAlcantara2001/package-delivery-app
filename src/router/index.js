@@ -16,6 +16,7 @@ import CustomerDeliveryHistory from '../views/customer/CustomerDeliveryHistory.v
 import RiderLogin from '../views/rider/RiderLogin.vue'
 import RiderRegistration from '../views/rider/RiderRegistration.vue'
 import RiderHome from '../views/rider/RiderHome.vue'
+import RiderDeliveryNavigate from '../views/rider/RiderDeliveryNavigate.vue'
 
 import AdminHome from '../views/admin/AdminHome.vue'
 import AdminLogin from '../views/admin/AdminLogin.vue'
@@ -46,11 +47,7 @@ const routes = [
     name: 'CustomerRegistration',
     component: CustomerRegistration
   },
-  {
-    path: '/rider-registration',
-    name: 'RiderRegistration',
-    component: RiderRegistration
-  },
+
   {
     path: '/customer-login',
     name: 'CustomerLogin',
@@ -63,7 +60,7 @@ const routes = [
     name: 'CustomerHome',
     component: CustomerHome,
     meta: {
-      requiredRole: 'customer',
+      requiredRole: 'CUSTOMER',
     },
   },
 
@@ -72,7 +69,7 @@ const routes = [
     name: 'CustomerProfile',
     component: CustomerProfile,
     meta: {
-      requiredRole: 'customer',
+      requiredRole: 'CUSTOMER',
     },
   },
 
@@ -81,7 +78,7 @@ const routes = [
     name: 'CustomerDeliveryHistory',
     component: CustomerDeliveryHistory,
     meta: {
-      requiredRole: 'customer',
+      requiredRole: 'CUSTOMER',
     },
   },
 
@@ -90,7 +87,7 @@ const routes = [
     name: 'PreDelivery',
     component: PreDelivery,
     meta: {
-      requiredRole: 'customer',
+      requiredRole: 'CUSTOMER',
     },
   },
   {
@@ -98,7 +95,7 @@ const routes = [
     name: 'GetNearRiders',
     component: GetNearRiders,
     meta: {
-      requiredRole: 'customer',
+      requiredRole: 'CUSTOMER',
     },
   },
   {
@@ -106,13 +103,19 @@ const routes = [
     name: 'TrackRider',
     component: TrackRider,
     meta: {
-      requiredRole: 'customer',
+      requiredRole: 'CUSTOMER',
     },
 
   },
 
 
   //rider
+
+  {
+    path: '/rider-registration',
+    name: 'RiderRegistration',
+    component: RiderRegistration
+  },
 
   {
     path: '/rider-login',
@@ -125,7 +128,7 @@ const routes = [
     name: 'RiderHome',
     component: RiderHome,
     meta: {
-      requiredRole: 'rider',
+      requiredRole: 'RIDER',
     },
   },
 
@@ -134,7 +137,16 @@ const routes = [
     name: 'RiderProfile',
     component: RiderProfile,
     meta: {
-      requiredRole: 'rider',
+      requiredRole: 'RIDER',
+    },
+  },
+
+  {
+    path: '/rider/delivery-navigate/:id',
+    name: 'RiderDeliveryNavigate',
+    component: RiderDeliveryNavigate,
+    meta: {
+      requiredRole: 'RIDER',
     },
   },
 
